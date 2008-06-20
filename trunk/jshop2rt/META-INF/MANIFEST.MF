@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: jshop2rt
+Bundle-SymbolicName: jshop2rt
+Bundle-Version: 1.0.0
+Bundle-ClassPath: JSHOP2.jar,
+ antlr.jar
+Export-Package: net.gamalocus.cotwl2.ai.htnplanner,
+ net.gamalocus.jshop2rt
