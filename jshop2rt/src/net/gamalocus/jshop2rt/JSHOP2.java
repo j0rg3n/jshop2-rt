@@ -301,26 +301,33 @@ public class JSHOP2 implements Serializable
       return false;
     }
     
-    if (stack.size() >= recursionLimit)
-    {
-      StringBuffer buf = new StringBuffer();
-      buf.append("Recursion limit exceeded. Stack trace:");
-      int level = stack.size();
-      for (Frame f : stack)
-      {
-        buf.append("\n\t").append(level).append(": ").append(f.toString(domain));
-        level--;
-      }
-      logger.warning(buf.toString());
-      return false;  
-    }
-    
     //-- The local variables we need every time this function is called.
     final Frame v = stack.peek();
     
     switch (v.pc)
     {
     case A:
+      if (stack.size() >= recursionLimit)
+      {
+        StringBuffer buf = new StringBuffer();
+        buf.append("Recursion limit exceeded.");
+        
+        if (logger.isLoggable(Level.FINEST))
+        {
+          buf.append(" Stack trace:");
+          int level = stack.size();
+          for (Frame f : stack)
+          {
+            buf.append("\n\t").append(level).append(": ").append(f.toString(domain));
+            level--;
+          }
+        }
+        logger.warning(buf.toString());
+        
+        _return(false);
+        break;  
+      }
+      
       //-- Find all the tasks that we have the option to achieve right now. This
       //-- equals to the first task in the current task list if it is ordered, or
       //-- the first task in all the subtasks of the current task list if it is
@@ -371,8 +378,11 @@ public class JSHOP2 implements Serializable
             //plans.addLast(currentPlan);
           //}
   
-          logger.fine(String.format("%d plans found, latest with cost %s, %d actions.",
-              plans.size(), currentPlan.getCost().toString(), currentPlan.getOps().size()));
+          if (logger.isLoggable(Level.FINE))
+          {
+            logger.fine(String.format("%d plans found, latest with cost %s, %d actions.",
+                plans.size(), currentPlan.getCost().toString(), currentPlan.getOps().size()));
+          }
   
           logPlanFoundStep();
   
@@ -446,13 +456,16 @@ public class JSHOP2 implements Serializable
             //-- If there is such bindings,
             //if (v.binding != null)
             //{
-            case C_1_2_1_1_V_BINDING_IS_NOT_NULL: 
-              logger.finest(String.format("Binding for predicate %s " +
-                  "with operator %s (%s):\n\t%s", 
-                  v.t.getHead().toString(domain, Namespace.PRIMITIVE_TASK_ATOM),
-                  v.o[v.j].getClass().getSimpleName(),
-                  v.o[v.j].getHead().toString(domain, Namespace.PRIMITIVE_TASK_ATOM),
-                  toString(v.binding)));
+            case C_1_2_1_1_V_BINDING_IS_NOT_NULL:
+              if (logger.isLoggable(Level.FINEST))
+              {
+                logger.finest(String.format("Binding for predicate %s " +
+                    "with operator %s (%s):\n\t%s", 
+                    v.t.getHead().toString(domain, Namespace.PRIMITIVE_TASK_ATOM),
+                    v.o[v.j].getClass().getSimpleName(),
+                    v.o[v.j].getHead().toString(domain, Namespace.PRIMITIVE_TASK_ATOM),
+                    toString(v.binding)));
+              }
 
               //-- Get the iterator that iterates over all the bindings that can
               //-- satisfy the precondition for this operator.
@@ -483,8 +496,11 @@ public class JSHOP2 implements Serializable
                   //-- to the beginning of the plan, remembering how much it
                   //-- cost.
                   v.cost = currentPlan.addOperator(v.o[v.j], v.nextB);
-                  logger.finest(String.format("=== %d: Adding cost %s: Total is %s.", 
-                      stack.size(), v.cost, currentPlan.getCost()));
+                  if (logger.isLoggable(Level.FINEST))
+                  {
+                    logger.finest(String.format("=== %d: Adding cost %s: Total is %s.", 
+                        stack.size(), v.cost, currentPlan.getCost()));
+                  }
 
                   // TODO Branch and bound: Compare the plan cost to the current lower bound, 
                   // and stop if below. 
@@ -498,11 +514,17 @@ public class JSHOP2 implements Serializable
                   
                 case C_1_2_1_2_1_2:
                   //-- Remove the operator from the current plan.
-                  logger.finest(String.format("=== %d: Removing cost %s: Total is %s.", 
-                      stack.size(), v.cost, currentPlan.getCost()));
+                  if (logger.isLoggable(Level.FINEST))
+                  {
+                    logger.finest(String.format("=== %d: Removing cost %s: Total is %s.", 
+                        stack.size(), v.cost, currentPlan.getCost()));
+                  }
                   currentPlan.removeOperator(v.cost);
-                  logger.finest(String.format("=== %d: Removed cost %s: Total is %s.", 
-                      stack.size(), v.cost, currentPlan.getCost()));
+                  if (logger.isLoggable(Level.FINEST))
+                  {
+                    logger.finest(String.format("=== %d: Removed cost %s: Total is %s.", 
+                        stack.size(), v.cost, currentPlan.getCost()));
+                  }
                 //}
                   
               case C_1_2_1_2_2:
@@ -522,11 +544,14 @@ public class JSHOP2 implements Serializable
             //else
             //{
             case C_1_2_1_2_V_BINDING_IS_NULL:
-              logger.finest(String.format("No binding find for predicate %s " +
-                  "with operator %s (%s).", 
-                  v.t.getHead().toString(domain, Namespace.LOGICAL_PREDICATE),
-                  v.o[v.j].getClass().getSimpleName(),
-                  v.o[v.j].getHead().toString(domain, Namespace.PRIMITIVE_TASK_ATOM)));
+              if (logger.isLoggable(Level.FINEST))
+              {
+                logger.finest(String.format("No binding find for predicate %s " +
+                    "with operator %s (%s).", 
+                    v.t.getHead().toString(domain, Namespace.LOGICAL_PREDICATE),
+                    v.o[v.j].getClass().getSimpleName(),
+                    v.o[v.j].getHead().toString(domain, Namespace.PRIMITIVE_TASK_ATOM)));
+              }
             //}
           case C_1_2_2_NEXT_V_J___0__V_J___V_O_LENGTH__V_J___:
             // Jump to head of for statement
@@ -569,12 +594,15 @@ public class JSHOP2 implements Serializable
             //if (v.binding != null)
             //{
             case C_1_5_1_1_BINDING_IS_NOT_NULL: 
-              logger.finest(String.format("Binding for predicate %s " +
-                  "with method %s (%s):\n\t%s", 
-                  v.t.getHead().toString(domain, Namespace.COMPOUND_TASK_ATOM),
-                  v.m[v.j].getClass().getSimpleName(),
-                  v.m[v.j].getHead().toString(domain, Namespace.COMPOUND_TASK_ATOM),
-                  toString(v.binding)));
+              if (logger.isLoggable(Level.FINEST))
+              {
+                logger.finest(String.format("Binding for predicate %s " +
+                    "with method %s (%s):\n\t%s", 
+                    v.t.getHead().toString(domain, Namespace.COMPOUND_TASK_ATOM),
+                    v.m[v.j].getClass().getSimpleName(),
+                    v.m[v.j].getHead().toString(domain, Namespace.COMPOUND_TASK_ATOM),
+                    toString(v.binding)));
+              }
 
               //-- Initially, precondition of no branch of this method has
               //-- already been satisfied, so set this variable to false.
@@ -655,11 +683,14 @@ public class JSHOP2 implements Serializable
             //else
             //{
             case C_1_5_1_3_BINDING_IS_NULL:
-              logger.finest(String.format("No binding find for predicate %s " +
-                  "with method %s (%s).", 
-                  v.t.getHead().toString(domain, Namespace.LOGICAL_PREDICATE),
-                  v.m[v.j].getClass().getSimpleName(),
-                  v.m[v.j].getHead().toString(domain, Namespace.COMPOUND_TASK_ATOM)));
+              if (logger.isLoggable(Level.FINEST))
+              {
+                logger.finest(String.format("No binding find for predicate %s " +
+                    "with method %s (%s).", 
+                    v.t.getHead().toString(domain, Namespace.LOGICAL_PREDICATE),
+                    v.m[v.j].getClass().getSimpleName(),
+                    v.m[v.j].getHead().toString(domain, Namespace.COMPOUND_TASK_ATOM)));
+              }
             //}
               
           case C_1_5_2:
@@ -784,7 +815,8 @@ public class JSHOP2 implements Serializable
   
   private void logFailure(Frame v)
   {
-    if (v.leaf && logger.isLoggable(Level.FINER))
+    final Level level = Level.FINER;
+    if (v.leaf && logger.isLoggable(level))
     {
       StringBuffer buf = new StringBuffer();
       buf.append("Longest plan before backtracking:");
@@ -831,7 +863,7 @@ public class JSHOP2 implements Serializable
         buf.append("\n");
       }
       
-      logger.finer(buf.toString());
+      logger.log(level, buf.toString());
     }
   }
 
