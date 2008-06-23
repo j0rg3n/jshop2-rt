@@ -95,9 +95,9 @@ public class TermConstant extends Term implements Serializable
   /** This function produces Java code to create this constant symbol as a
    *  term.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "owner.getTermConstant(" + index + ")";
+    return "owner.getTermConstant(" + index + ") /*" + name + "*/";
   }
 
   /** Constant symbols are mapped at compile time to integers, this function,

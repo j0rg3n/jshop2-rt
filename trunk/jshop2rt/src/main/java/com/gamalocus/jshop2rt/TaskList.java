@@ -228,14 +228,17 @@ public class TaskList extends CompileTimeObject implements Serializable
 
   /** This function produces Java code used to create this task list either
    *  as an atomic task list or recursively, as a list of other task lists.
+   *  
+   *  FIXME We should have a descriptive label, too.
    *
    *  @param what
    *          the <code>String</code> name of the task list created by this
    *          piece of code.
+   * @param string 
    *  @return
    *          the Java code as a <code>String</code>.
   */
-  public String getInitCode(String what)
+  public String getInitCode(String label, String what)
   {
     //-- Empty task list.
     if (isEmpty())
@@ -243,7 +246,7 @@ public class TaskList extends CompileTimeObject implements Serializable
 
     //-- Atomic task list.
     if (subtasks == null)
-      return "\t\t\t" + what + " = new TaskList(" + task.toCode() + ");" + endl;
+      return "\t\t\t" + what + " = new TaskList(" + task.toCode(what) + ");" + endl;
 
     //-- Non-atomic task list.
     String s;
@@ -253,7 +256,7 @@ public class TaskList extends CompileTimeObject implements Serializable
 
     //-- Recursively create subtasks.
     for (int i = 0; i < subtasks.length; i++)
-      s += subtasks[i].getInitCode(what + ".subtasks[" + i + "]");
+      s += subtasks[i].getInitCode(String.format("Sub-list of %s", label), what + ".subtasks[" + i + "]");
 
     return s;
   }
@@ -330,9 +333,9 @@ public class TaskList extends CompileTimeObject implements Serializable
 
   /** This function produces Java code to create this task list.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "\t\t\tTaskList retVal;" + endl + endl + getInitCode("retVal") +
+    return "\t\t\tTaskList retVal;" + endl + endl + getInitCode(label, "retVal") +
            endl + "\t\t\treturn retVal;" + endl;
   }
 

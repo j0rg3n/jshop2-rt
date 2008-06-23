@@ -250,12 +250,12 @@ public class Predicate extends CompileTimeObject implements Serializable
 
   /** This function produces Java code to create this predicate.
   */
-  public String toCode()
+  public String toCode(String label)
   {
     if (isVar())
       return "new Predicate(" + varIdx + ", " + varCount + ")";
 
-    return "new Predicate(" + head + ", " + varCount + ", " + param.toCode() + ")";
+    return "new Predicate(" + head + ", " + varCount + ", " + param.toCode(label) + ")";
   }
 
   /** This function returns a printable <code>String</code> representation of

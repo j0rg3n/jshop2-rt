@@ -346,17 +346,19 @@ public class InternalDomain
     s += String.format("\tprivate static final long serialVersionUID = %dL;\n",
         sourceHash) + endl + endl;
     
+    // FIXME Compute indices of methods, operators and axioms.
+    
     //-- Produce the nested classes that represent the operators.
-    for (int i = 0; i < operators.size(); i++)
-      s += operators.get(i).toCode();
+    for (InternalOperator op : operators)
+      s += op.toCode(String.format("Operator #%d for primitive task %s", -1, primitiveTasks.get(op.getHead().getHead())));
 
     //-- Produce the nested classes that represent the methods.
-    for (int i = 0; i < methods.size(); i++)
-      s += methods.get(i).toCode();
+    for (InternalMethod me : methods)
+      s += me.toCode(String.format("Method %d for compound task %s", -1, compoundTasks.get(me.getHead().getHead())));
 
     //-- Produce the nested classes that represent the axioms.
-    for (int i = 0; i < axioms.size(); i++)
-      s += axioms.get(i).toCode();
+    for (InternalAxiom ax : axioms)
+      s += ax.toCode(String.format("Branch %d for axiom %s", -1, constants.get(ax.getHead().getHead())));
 
     //-- Add time stamp and location of source file.
     s += String.format("\tpublic static final String sourcePath = \"%s\";" + endl, 
@@ -680,8 +682,9 @@ public class InternalDomain
         //-- Check if the predicate's head appears in the domain too. If not,
         //-- we don't need to add it to the world state because it doesn't make
         //-- a difference.
+        // FIXME Use toString method with domain and namespace.
         if (p.getHead() < constantsSize)
-          s += "\t\ts.add(" + p.toCode() + ");" + endl;
+          s += "\t\ts.add(" + p.toCode(p.toString()) + ");" + endl;
       }
 
       s += "\t}" + endl + endl;
@@ -735,7 +738,7 @@ public class InternalDomain
       s += "\t\tcreateState" + problemIdx + "(s);" + endl;
 
       //-- Create the initial task list.
-      s += endl + tl.getInitCode("tl") + endl;
+      s += endl + tl.getInitCode(String.format("Task list of problem #%d", problemIdx), "tl") + endl;
 
       //-- Define the thread that will solve this planning problem.
       s += "\t\tthread = new SolverThread(jShop2Planner, tl, " + planNo + ");" + endl;

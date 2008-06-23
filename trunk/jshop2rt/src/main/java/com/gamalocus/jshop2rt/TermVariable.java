@@ -100,7 +100,7 @@ public class TermVariable extends Term
   /** This function produces Java code to create this variable symbol as a
    *  term.
   */
-  public String toCode()
+  public String toCode(String label)
   {
     return "owner.getTermVariable(" + index + ")";
   }

@@ -1,6 +1,7 @@
 package com.gamalocus.jshop2rt;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -459,6 +460,30 @@ public class State implements Serializable
       }
     });
     return mods;
+  }
+  
+  /**
+   * @return Argument lists of all predicates with the given head.
+   */
+  public Collection<Term> getArguments(int head)
+  {
+    final SetAndList<Term> tails = atoms.get(head);
+    if (tails != null)
+    {
+      return Collections.unmodifiableCollection(tails.getList());
+    }
+    else
+    {
+      return Collections.emptySet();
+    }
+  }
+
+  /**
+   * @return Argument lists of all predicates with the given head.
+   */
+  public Collection<Term> getArguments(Term head)
+  {
+    return getArguments(((TermConstant)head).getIndex());
   }
 
   /** To add a predicate to the current state of the world.

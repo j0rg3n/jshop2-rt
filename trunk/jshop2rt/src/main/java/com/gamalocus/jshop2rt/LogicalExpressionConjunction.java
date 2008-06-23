@@ -47,16 +47,19 @@ public class LogicalExpressionConjunction extends LogicalExpression
    *  of which can be used at run time to represent the conjuncts of this
    *  conjunction, and the conjunction itself.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
     String s = "";
 
     //-- First produce any code needed by the conjuncts.
     for (int i = 0; i < le.length; i++)
-      s += le[i].getInitCode();
+      s += le[i].getInitCode(String.format("Conjunct #%d of %s", i, label));
 
     //-- The header of the class for this conjunction at run time. Note the use
     //-- of 'cnt' to make the name of this class unique.
+    s += "\t/**" + endl;
+    s += "\t * " + label + endl;
+    s += "\t */" + endl;
     s += "\tpublic static class Precondition" + cnt + " extends Precondition" + endl;
 
     //-- Defining two arrays for storing the iterators and bindings for each
@@ -76,7 +79,7 @@ public class LogicalExpressionConjunction extends LogicalExpression
     for (int i = 1; i <= le.length; i++)
       //-- Set the corresponding element in the array to the code that produces
       //-- that conjunct.
-      s += "\t\t\tp[" + i + "] = " + le[i-1].toCode() + ";" + endl;
+      s += "\t\t\tp[" + i + "] = " + le[i-1].toCode(String.format("Conjunct %d of %s", i, label)) + ";" + endl;
 
     //-- Allocate the array of bindings.
     //-- Set to one more than the number of conjuncts.  The first position
@@ -213,7 +216,7 @@ public class LogicalExpressionConjunction extends LogicalExpression
   /** This function produces the Java code to create an object of the class
    *  that was implemented to represent this conjunction at run time.
   */
-  public String toCode()
+  public String toCode(String label)
   {
     return "new Precondition" + cnt + "(owner, unifier)";
   }

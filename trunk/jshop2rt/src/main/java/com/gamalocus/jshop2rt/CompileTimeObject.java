@@ -15,9 +15,11 @@ public abstract class CompileTimeObject
 
   /** This abstract function produces the Java code needed to implement this
    *  compile time element.
-   *
+   * @param label 
+   *            Descriptive label for the element, as seen from its parent. Used for comments.
+   *            For small elements, this makes no sense, and <code>null</code> may be passed.
    *  @return
    *          the produced code as a <code>String</code>.
   */
-  public abstract String toCode();
+  public abstract String toCode(String label);
 }

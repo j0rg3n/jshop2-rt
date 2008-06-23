@@ -175,13 +175,14 @@ public class DelAddForAll extends DelAddElement
    *  that will be needed to create the precondition object that implements
    *  the precondition of this <code>ForAll</code> delete/add element at run
    *  time.
+   * @param label 
    *
    *  @return
    *          the produced code as a <code>String</code>.
   */
-  public String getExpCode()
+  public String getExpCode(String label)
   {
-    return exp.getInitCode();
+    return exp.getInitCode(label);
   }
 
   /** This function produces Java code used to initialize an array of type
@@ -195,12 +196,13 @@ public class DelAddForAll extends DelAddElement
    *  @return
    *          the Java code as a <code>String</code>.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
     String retVal;
 
     //-- Allocate an array of the right size for the empty binding.
-    retVal = "\t\tunifier = new Term[" + exp.getVarCount() + "];" + endl;
+    retVal = "\t\t// " + label + endl;
+    retVal += "\t\tunifier = new Term[" + exp.getVarCount() + "];" + endl;
 
     //-- Set the elements of the binding to null (meaning that none of the
     //-- variables are bound yet.
@@ -215,7 +217,7 @@ public class DelAddForAll extends DelAddElement
     for (int i = 0; i < atoms.length; i++)
     {
       //-- Add the Java code that produces that atom as a member of the array.
-      retVal += "\t\t\t" + atoms[i].toCode();
+      retVal += "\t\t\t" + atoms[i].toCode(String.format("Instatiation of atom #%d of %s", i, label));
 
       //-- If this is not the last element in the array, add a comma to the
       //-- code.
@@ -241,8 +243,8 @@ public class DelAddForAll extends DelAddElement
   /** This function produces Java code to create this <code>ForAll</code>
    *  delete/add element.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new DelAddForAll(" + exp.toCode() + ", atoms" + cnt + ")";
+    return "new DelAddForAll(" + exp.toCode(label) + ", atoms" + cnt + ")";
   }
 }

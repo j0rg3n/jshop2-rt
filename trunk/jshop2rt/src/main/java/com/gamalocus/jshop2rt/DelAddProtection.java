@@ -73,8 +73,8 @@ public class DelAddProtection extends DelAddElement
   /** This function produces Java code to create this <code>Protection</code>
    *  delete/add element.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new DelAddProtection(" + atom.toCode() + ")";
+    return "new DelAddProtection(" + atom.toCode(label) + ")";
   }
 }

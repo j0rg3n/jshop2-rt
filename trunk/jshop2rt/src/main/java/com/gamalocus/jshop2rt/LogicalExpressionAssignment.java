@@ -35,7 +35,7 @@ public class LogicalExpressionAssignment extends LogicalExpression
   /** This class does not need any initialization code, therefore, this
    *  function simply returns an empty <code>String</code>.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
     return "";
   }
@@ -59,9 +59,9 @@ public class LogicalExpressionAssignment extends LogicalExpression
    *  <code>PreconditionAssign</code> object that represents this assignment
    *  logical expression at run time.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new PreconditionAssign(" + t.toCode() + ", unifier, " + whichVar +
+    return "new PreconditionAssign(" + t.toCode(label) + ", unifier, " + whichVar +
            ")";
   }
 }

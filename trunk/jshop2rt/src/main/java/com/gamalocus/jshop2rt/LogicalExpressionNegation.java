@@ -29,9 +29,9 @@ public class LogicalExpressionNegation extends LogicalExpression
    *  which can be used at run time to represent the logical expression this
    *  object is negating.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
-    return le.getInitCode();
+    return le.getInitCode(label);
   }
 
   /** To propagate the variable count to the logical expression the negative of
@@ -46,8 +46,8 @@ public class LogicalExpressionNegation extends LogicalExpression
    *  <code>PreconditionNegation</code> object that represents this negative
    *  logical expression at run time.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new PreconditionNegation(" + le.toCode() + ", " + getVarCount() + ")";
+    return "new PreconditionNegation(" + le.toCode(label) + ", " + getVarCount() + ")";
   }
 }

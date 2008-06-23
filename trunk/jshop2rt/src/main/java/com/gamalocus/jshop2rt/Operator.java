@@ -18,11 +18,11 @@ public abstract class Operator extends DomainElement
   /** Represents the add list in case it is a variable (The integer value
    *  represents variable's index), otherwise it is -1.
   */
-  private int addVarIdx;
+  private final int addVarIdx;
 
   /** Cost of this operator.
   */
-  private Term cost;
+  private final Term cost;
 
   /** Represents the delete list in case it is a real list and not a variable.
   */
@@ -31,7 +31,7 @@ public abstract class Operator extends DomainElement
   /** Represents the delete list in case it is a variable (The integer value
    *  represents variable's index), otherwise it is -1.
   */
-  private int delVarIdx;
+  private final int delVarIdx;
 
   /** To initialize the operator.
    *
@@ -70,6 +70,8 @@ public abstract class Operator extends DomainElement
    *          current state of the world as the result of applying this
    *          operator. This data can be used later in case of a backtrack to
    *          undo these changes.
+   *          
+   *          The array elements are initialized by {@link #apply(Term[], State, Vector[])}.
    *  @return
    *          <code>true</code> if the operator was applicable,
    *          <code>false</code> otherwise. An operator is not applicable when

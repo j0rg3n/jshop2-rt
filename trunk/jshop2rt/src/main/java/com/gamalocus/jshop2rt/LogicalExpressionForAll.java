@@ -38,9 +38,9 @@ public class LogicalExpressionForAll extends LogicalExpression
    *  consequence of the <code>ForAll</code> logical expression this object is
    *  representing.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
-    return premise.getInitCode() + consequence.getInitCode();
+    return premise.getInitCode("premise of " + label) + consequence.getInitCode("consequence of " + label);
   }
 
   /** To propagate the variable count to the <code>ForAll</code> logical
@@ -56,9 +56,9 @@ public class LogicalExpressionForAll extends LogicalExpression
    *  <code>PreconditionForAll</code> object that represents this
    *  <code>ForAll</code> logical expression at run time.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new PreconditionForAll(" + premise.toCode() + ", " +
-           consequence.toCode() + ", " + getVarCount() + ")";
+    return "new PreconditionForAll(" + premise.toCode("premise of " + label) + ", " +
+           consequence.toCode("consequence of " + label) + ", " + getVarCount() + ")";
   }
 }

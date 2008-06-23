@@ -96,7 +96,7 @@ public boolean equals(Object obj)
 
   /** This function produces Java code to create this numerical.
   */
-  public String toCode()
+  public String toCode(String label)
   {
     return "new TermNumber(" + number + ")";
   }

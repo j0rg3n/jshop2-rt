@@ -74,13 +74,13 @@ public class InternalMethod extends InternalElement
 
   /** This function produces the Java code needed to implement this method.
   */
-  public String toCode()
+  public String toCode(String label)
   {
     String s = "";
 
     //-- First produce the initial code for the preconditions of each branch.
     for (int i = 0; i < pres.size(); i++)
-      s += pres.get(i).getInitCode();
+      s += pres.get(i).getInitCode(String.format("Precondition #%d of %s", i, label));
 
     //-- The header of the class for this method at run time. Note the use of
     //-- 'getCnt()' to make the name of this class unique.
@@ -91,7 +91,7 @@ public class InternalMethod extends InternalElement
 
     //-- Call the constructor of the base class (class 'Method') with the code
     //-- that produces the head of this method.
-    s += "\t\t\tsuper(owner, " + getHead().toCode() + ");" + endl;
+    s += "\t\t\tsuper(owner, " + getHead().toCode(String.format("head of %s", label)) + ");" + endl;
 
     //-- Allocate the array to keep the possible task lists that represent
     //-- possible decompositions of this method.
@@ -127,7 +127,7 @@ public class InternalMethod extends InternalElement
         s += "\t\tTaskList createTaskList" + i + "()" + endl + "\t\t{" + endl;
 
         //-- The code that will produce this task list.
-        s += (subs.get(i)).toCode() + "\t\t}" + endl + endl;
+        s += (subs.get(i)).toCode(String.format("Sub-list %d of %s", i, label)) + "\t\t}" + endl + endl;
       }
     }
 
@@ -148,7 +148,7 @@ public class InternalMethod extends InternalElement
 
       //-- Produce the code that will return the appropriate iterator.
       s += endl + "\t\t\t\tcase " + i + ":" + endl + "\t\t\t\t\tp = ";
-      s += pre.toCode() + ";" + endl;
+      s += pre.toCode(String.format("Precondition #%d of %s", i, label)) + ";" + endl;
 
       //-- If the logical precondition is marker ':first', set the appropriate
       //-- flag.
