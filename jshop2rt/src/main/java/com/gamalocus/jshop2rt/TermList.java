@@ -129,13 +129,13 @@ public class TermList extends Term implements Iterable<Term>
 
   /** This function produces Java code to create this list term.
   */
-  public String toCode()
+  public String toCode(String label)
   {
     if (list == null)
       return "TermList.NIL";
 
-    return "new TermList(" + list.getHead().toCode() + ", " +
-           list.getTail().toCode() + ")";
+    return "new TermList(" + list.getHead().toCode(label) + ", " +
+           list.getTail().toCode(label) + ")";
   }
 
   /** This function converts this list term to a predicate.

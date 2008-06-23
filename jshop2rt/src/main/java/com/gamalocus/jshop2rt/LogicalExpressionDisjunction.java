@@ -47,14 +47,14 @@ public class LogicalExpressionDisjunction extends LogicalExpression
    *  of which can be used at run time to represent the disjuncts of this
    *  disjunction, and the disjunction itself.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
     String s = "";
     int i;
 
     //-- First produce any code needed by the disjuncts.
     for (i = 0; i < le.length; i++)
-      s += le[i].getInitCode();
+      s += le[i].getInitCode(String.format("Disjunct #%d of %s", i, label));
 
     //-- The header of the class for this disjunction at run time. Note the use
     //-- of 'cnt' to make the name of this class unique.
@@ -78,7 +78,7 @@ public class LogicalExpressionDisjunction extends LogicalExpression
     for (i = 0; i < le.length; i++)
       //-- Set the corresponding element in the array to the code that produces
       //-- that disjunct.
-      s += "\t\t\tp[" + i + "] = " + le[i].toCode() + ";" + endl + endl;
+      s += "\t\t\tp[" + i + "] = " + le[i].toCode(String.format("Disjunct #%d of %s", i, label)) + ";" + endl + endl;
 
     //-- A conjucntion can be potentially satisfied more than once, so the
     //-- default for the 'isFirstCall' flag is false.
@@ -137,9 +137,9 @@ public class LogicalExpressionDisjunction extends LogicalExpression
   /** This function produces the Java code to create an object of the class
    *  that was implemented to represent this disjunction at run time.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new Precondition" + cnt + "(owner, unifier)";
+    return "new Precondition" + cnt + "(owner, unifier) /*" + label + "*/";
   }
 
 

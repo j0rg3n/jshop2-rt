@@ -35,11 +35,12 @@ public abstract class LogicalExpression extends CompileTimeObject implements Ser
   /** This function produces Java code that initializes some data structures
    *  that will be needed to create the precondition object that implements
    *  this logical expression at run time.
+   * @param label 
    *
    *  @return
    *          the produced code as a <code>String</code>.
   */
-  public abstract String getInitCode();
+  public abstract String getInitCode(String label);
 
   /** This function returns the number of variables in this logical expression.
    *

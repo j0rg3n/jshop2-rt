@@ -86,8 +86,8 @@ public class DelAddAtomic extends DelAddElement
   /** This function produces Java code to create this atomic delete/add
    *  element.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new DelAddAtomic(" + atom.toCode() + ")";
+    return "new DelAddAtomic(" + atom.toCode(label) + ")";
   }
 }

@@ -28,7 +28,7 @@ public class LogicalExpressionCall extends LogicalExpression
   /** This class does not need any initialization code, therefore, this
    *  function simply returns an empty <code>String</code>.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
     return "";
   }
@@ -52,8 +52,8 @@ public class LogicalExpressionCall extends LogicalExpression
    *  <code>PreconditionCall</code> object that represents this call logical
    *  expression at run time.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new PreconditionCall(" + term.toCode() + ", unifier)";
+    return "new PreconditionCall(" + term.toCode(label) + ", unifier)";
   }
 }

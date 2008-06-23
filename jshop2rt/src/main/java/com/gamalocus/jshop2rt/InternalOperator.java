@@ -106,7 +106,7 @@ public class InternalOperator extends InternalElement
 
   /** This function produces the Java code needed to implement this operator.
   */
-  public String toCode()
+  public String toCode(String label)
   {
     String s;
 
@@ -120,7 +120,8 @@ public class InternalOperator extends InternalElement
     boolean hasForAll = false;
 
     //-- First produce the initial code for the precondition of the operator.
-    s = pre.getInitCode();
+    final String preconditionLabel = "Precondition of " + label;
+    s = pre.getInitCode(preconditionLabel);
 
     Integer varIdx = (Integer)del.get(0);
     //-- If the first element of the delete list is null, it means the delete
@@ -137,7 +138,8 @@ public class InternalOperator extends InternalElement
         {
           //-- Produce the code that will calculate the bindings that will
           //-- satisfy its preconditions.
-          s += ((DelAddForAll)del.get(i)).getExpCode();
+          s += ((DelAddForAll)del.get(i)).getExpCode(String.format("Bindings for preconditions of " +
+          		"delete part of DelAddElement #%d of %s", i, label));
 
           hasForAll = true;
         }
@@ -163,7 +165,8 @@ public class InternalOperator extends InternalElement
         {
           //-- Produce the code that will calculate the bindings that will
           //-- satisfy its preconditions.
-          s += ((DelAddForAll)add.get(i)).getExpCode();
+          s += ((DelAddForAll)add.get(i)).getExpCode(String.format("Bindings for precondition of " +
+          		"add part of DelAddElement #%d of %s", i, label));
 
           hasForAll = true;
         }
@@ -176,6 +179,9 @@ public class InternalOperator extends InternalElement
 
     //-- The header of the class for this operator at run time. Note the use of
     //-- 'getCnt()' to make the name of this class unique.
+    s += "\t/**" + endl;
+    s += "\t * " + label + endl;
+    s += "\t */" + endl;
     s += "\tpublic static class Operator" + getCnt() + " extends Operator" + endl + "{" + endl;
 
     //-- The constructor of the class.
@@ -183,8 +189,8 @@ public class InternalOperator extends InternalElement
 
     //-- Call the constructor of the base class (class 'Operator') with the
     //-- code that produces the head of this method.
-    s += "\t\t\tsuper(owner, " + getHead().toCode() + ", " + delIdx + ", " + addIdx;
-    s += ", " + cost.toCode() + ");" + endl + endl;
+    s += "\t\t\tsuper(owner, " + getHead().toCode("head of " + label) + ", " + delIdx + ", " + addIdx;
+    s += ", " + cost.toCode("cost of " + label) + ");" + endl + endl;
 
     //-- Define a variable that will be used in the constructors of the
     //-- 'LogicalExpression's if there are any ForAll elements.
@@ -203,15 +209,17 @@ public class InternalOperator extends InternalElement
       //-- course,
       for (int i = 1; i < del.size(); i++)
       {
+        final String elementLabel = String.format("Delete list of DelAddElement #%d of %s", i, label);
+        
         //-- If it is a ForAll element, produce the code that will initialize
         //-- the list of atoms to be deleted by this element.
         if ((DelAddElement)del.get(i) instanceof DelAddForAll)
-          s += ((DelAddForAll)del.get(i)).getInitCode();
+          s += ((DelAddForAll)del.get(i)).getInitCode(elementLabel);
 
         //-- Set the corresponding element in the array to the code that
         //-- produces this delete/add element.
         s += "\t\t\tdelIn[" + (i - 1) + "] = ";
-        s += ((DelAddElement)del.get(i)).toCode() + ";" + endl;
+        s += ((DelAddElement)del.get(i)).toCode(elementLabel) + ";" + endl;
       }
 
       //-- Set the delete list of the operator to the array just created.
@@ -229,15 +237,17 @@ public class InternalOperator extends InternalElement
       //-- course,
       for (int i = 1; i < add.size(); i++)
       {
+        final String elementLabel = String.format("Add list of DelAddElement #%d of %s", i, label);
+        
         //-- If it is a ForAll element, produce the code that will initialize
         //-- the list of atoms to be added by this element.
         if ((DelAddElement)add.get(i) instanceof DelAddForAll)
-          s += ((DelAddForAll)add.get(i)).getInitCode();
+          s += ((DelAddForAll)add.get(i)).getInitCode(elementLabel);
 
         //-- Set the corresponding element in the array to the code that
         //-- produces this delete/add element.
         s += "\t\t\taddIn[" + (i - 1) + "] = ";
-        s += ((DelAddElement)add.get(i)).toCode() + ";" + endl;
+        s += ((DelAddElement)add.get(i)).toCode(elementLabel) + ";" + endl;
       }
 
       //-- Set the add list of the operator to the array just created.
@@ -254,7 +264,7 @@ public class InternalOperator extends InternalElement
     s += endl + "\t\t{" + endl + "\t\t\tPrecondition p;" + endl + endl;
 
     //-- Produce the code that will return the appropriate iterator.
-    s += "\t\t\tp = " + pre.toCode() + ";" + endl;
+    s += "\t\t\tp = " + pre.toCode(preconditionLabel) + ";" + endl;
 
     //-- If the logical precondition is marker ':first', set the appropriate
     //-- flag.

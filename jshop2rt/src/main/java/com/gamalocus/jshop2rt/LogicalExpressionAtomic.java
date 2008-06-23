@@ -28,7 +28,7 @@ public class LogicalExpressionAtomic extends LogicalExpression
   /** This class does not need any initialization code, therefore, this
    *  function simply returns an empty <code>String</code>.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
     return "";
   }
@@ -53,8 +53,8 @@ public class LogicalExpressionAtomic extends LogicalExpression
    *  <code>PreconditionAtomic</code> object that represents this atomic
    *  logical expression at run time.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new PreconditionAtomic(" + logicalAtom.toCode() + ", unifier)";
+    return "new PreconditionAtomic(" + logicalAtom.toCode(label) + ", unifier)";
   }
 }

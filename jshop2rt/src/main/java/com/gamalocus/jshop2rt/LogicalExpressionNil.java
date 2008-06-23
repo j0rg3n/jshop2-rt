@@ -15,7 +15,7 @@ public class LogicalExpressionNil extends LogicalExpression
    *  function simply returns an empty <code>String</code>.
   */
   @Override
-  public String getInitCode()
+  public String getInitCode(String label)
   {
     return "";
   }
@@ -40,7 +40,7 @@ public class LogicalExpressionNil extends LogicalExpression
    *  expression at run time.
   */
   @Override
-  public String toCode()
+  public String toCode(String label)
   {
     return "new PreconditionNil("+ getVarCount() + ")";
   }

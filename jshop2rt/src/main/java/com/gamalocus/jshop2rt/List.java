@@ -256,9 +256,9 @@ public class List extends CompileTimeObject implements Iterable<Term>, Serializa
   /** This function is used at compile time to produce Java code that when run,
    *  will create this list.
    */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new List(" + head.toCode() + ", " + tail.toCode() + ")";
+    return "new List(" + head.toCode(label) + ", " + tail.toCode(label) + ")";
   }
 
   /** This function is used to print the value of this list.

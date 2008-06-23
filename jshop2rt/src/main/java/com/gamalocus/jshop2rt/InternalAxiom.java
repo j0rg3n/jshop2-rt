@@ -56,25 +56,28 @@ public class InternalAxiom extends InternalElement
 
   /** This function produces the Java code needed to implement this axiom.
   */
-  public String toCode()
+  public String toCode(String label)
   {
     String s = "";
 
     //-- First produce the initial code for the preconditions of each branch.
     for (int i = 0; i < branches.size(); i++)
-      s += ((LogicalPrecondition)branches.get(i)).getInitCode();
+      s += ((LogicalPrecondition)branches.get(i)).getInitCode(String.format("Precondition of branch #%d of %s", i, label));
 
     //-- The header of the class for this axiom at run time. Note the use of
     //-- 'getCnt()' to make the name of this class unique.
     s += "\tpublic static class Axiom" + getCnt() + " extends Axiom" + endl + "{" + endl;
 
     //-- The constructor of the class.
+    s += "\t/**" + endl;
+    s += "\t * " + label + endl;
+    s += "\t */" + endl;
     s += "\t\tpublic Axiom" + getCnt() + "(Domain owner)" + endl + "\t\t{" + endl;
 
     //-- Call the constructor of the base class (class 'Axiom') with the code
     //-- that produces the head of this axiom, and number of branches of this
     //-- axiom as its parameters.
-    s += "\t\t\tsuper(owner, " + getHead().toCode() + ", " + branches.size() + ");";
+    s += "\t\t\tsuper(owner, " + getHead().toCode(String.format("Head of %s", label)) + ", " + branches.size() + ");";
     s += endl + "\t\t}" + endl + endl;
 
     //-- The function that returns an iterator that can be used to find all the
@@ -94,7 +97,7 @@ public class InternalAxiom extends InternalElement
 
       //-- Produce the code that will return the appropriate iterator.
       s += endl + "\t\t\t\tcase " + i + ":" + endl + "\t\t\t\t\tp = ";
-      s += pre.toCode() + ";" + endl;
+      s += pre.toCode(String.format("Precondition of branch #%d of %s", i, label)) + ";" + endl;
 
       //-- If the logical precondition is marker ':first', set the appropriate
       //-- flag.

@@ -105,9 +105,9 @@ public class TermCall extends Term
 
   /** This function produces Java code to create this call term.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new TermCall(" + args.toCode() + ", " + func + ", " + "\"" + func
+    return "new TermCall(" + args.toCode(label) + ", " + func + ", " + "\"" + func
             + "\"" + ")";
   }
 

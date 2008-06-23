@@ -73,9 +73,9 @@ public class LogicalPrecondition extends CompileTimeObject
   /** This function produces Java code that implements the class any object of
    *  which can be used at run time to represent this logical precondition.
   */
-  public String getInitCode()
+  public String getInitCode(String label)
   {
-    return le.getInitCode();
+    return le.getInitCode(label);
   }
 
   /** This function is used to set the number of variables for this logical
@@ -92,8 +92,8 @@ public class LogicalPrecondition extends CompileTimeObject
   /** This function produces the Java code to create an object that represents
    *  this logical precondition at run time.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "(" + le.toCode() + ").setComparator(" + func + ")";
+    return "(" + le.toCode(label) + ").setComparator(" + func + ")";
   }
 }

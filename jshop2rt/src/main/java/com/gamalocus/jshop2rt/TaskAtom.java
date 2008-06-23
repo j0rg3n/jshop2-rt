@@ -94,9 +94,9 @@ public class TaskAtom extends CompileTimeObject implements Serializable
 
   /** This function produces Java code to create this task atom.
   */
-  public String toCode()
+  public String toCode(String label)
   {
-    return "new TaskAtom(" + head.toCode() + ", " + immediate + ", " +
+    return "new TaskAtom(" + head.toCode(label) + ", " + immediate + ", " +
            primitive + ")";
   }
 
