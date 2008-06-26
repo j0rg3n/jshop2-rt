@@ -1,16 +1,9 @@
 package com.gamalocus.jshop2rt;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -47,7 +40,7 @@ class InternalVars implements Serializable
    *  application of an operator, to be used in case of a backtrack over that
    *  operator.
    */
-  Vector[] delAdd;
+  Vector<?>[] delAdd;
 
   /** The iterator iterating over the <code>LinkedList</code> of the tasks
    *  that we have the option to achieve right now.
@@ -190,7 +183,12 @@ public class JSHOP2 implements Serializable
 
   private static final long serialVersionUID = 274536180602188365L;
 
-  private final static Logger logger = Logger.getLogger(JSHOP2.class.getName());
+  /**
+   * We add the identity hash code to the logger name to be able to differentiate the output of several
+   * planners running simultaneously.
+   */
+  private final Logger logger = 
+    Logger.getLogger(String.format("%s.%08x", getClass().getName(), System.identityHashCode(this)));
 
   /**
    * Stack frames for the planner time slice.

@@ -6,7 +6,13 @@
 	<name>JSHOP2-rt</name>
 	<version>0.0.1-SNAPSHOT</version>
 	<description/>
-
+	
+	<scm>
+        <connection>scm:svn:http://jshop2-rt.googlecode.com/svn/trunk/</connection>
+        <developerConnection>scm:svn:https://jshop2-rt.googlecode.com/svn/trunk/</developerConnection>
+        <url>http://code.google.com/p/jshop2-rt/</url>
+    </scm>
+    
 	<distributionManagement>
 		<repository>
 			<id>gamalocus.com-dev</id>
