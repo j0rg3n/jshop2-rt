@@ -436,12 +436,24 @@ public class State implements Serializable
     this.logChanges = logChanges;
   }
 
-  public void clearLog()
+  /**
+   * Reset to state just before logging was enabled.
+   */
+  public void reset()
   {
-     addedAtoms.clear();
-     removedAtoms.clear();
+    for (Predicate p : addedAtoms)
+    {
+      del(p);
+    }
+    addedAtoms.clear();
+    
+    for (Predicate p : removedAtoms)
+    {
+      del(p);
+    }
+    removedAtoms.clear();
   }
-
+  
   public ArrayList<String> getModifications(Domain domain)
   {
     ArrayList<String> mods = new ArrayList<String>();

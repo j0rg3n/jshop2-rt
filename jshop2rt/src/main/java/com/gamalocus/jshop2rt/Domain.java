@@ -1,13 +1,11 @@
 package com.gamalocus.jshop2rt;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Map.Entry;
 
 /** Each domain at run time is represented as a class derived from this
  *  abstract class.
@@ -285,5 +283,47 @@ public abstract class Domain implements Serializable
   public String getPrimitiveTaskName(Operator o)
   {
     return primitiveTasks[o.getHead().getHead()];
+  }
+
+  public String getCompoundTaskName(Method m)
+  {
+    return compoundTasks[m.getHead().getHead()];
+  }
+
+  public int getPrimitiveTaskIndex(String primitiveTaskName)
+  {
+    for (int i = 0; i < primitiveTasks.length; ++i)
+    {
+      if (primitiveTasks[i].equals(primitiveTaskName))
+      {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Get all methods of compound task with given name.
+   */
+  public Method[] getMethods(String compoundTaskName)
+  {
+    final int i = getCompoundTaskIndex(compoundTaskName);
+    if (i == -1)
+    {
+      throw new NoSuchElementException(String.format("No composite task with name %s.", compoundTaskName));
+    }
+    return methods[i];
+  }
+
+  public int getCompoundTaskIndex(String compoundTaskName)
+  {
+    for (int i = 0; i < compoundTasks.length; ++i)
+    {
+      if (compoundTasks[i].equals(compoundTaskName))
+      {
+        return i;
+      }
+    }
+    return -1;
   }
 }
