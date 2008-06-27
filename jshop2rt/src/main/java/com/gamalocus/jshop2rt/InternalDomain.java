@@ -13,15 +13,11 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 /** Each domain at compile time is represented as an instance of this class.
  *
@@ -381,7 +377,7 @@ public class InternalDomain
     	String args = "";
     	for (String arg : comparator.subList(2, comparator.size()))
     	{
-    		args += String.format(args.isEmpty() ? "%s" : ", %s", arg);
+    		args += String.format(args.length() == 0 ? "%s" : ", %s", arg);
     	}
 
     	s += String.format("\tpublic %s %s = new %1$s(%s);",
