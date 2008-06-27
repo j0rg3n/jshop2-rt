@@ -84,7 +84,16 @@ public class DomainCompiler
     }
 
     // FIXME Set output path  to outputPath
-    String[] args = new String[]{ javaSource.getAbsolutePath() };
+    String[] args = new String[]{
+        // Verbose output
+        "-verbose",  
+        // Debugging info
+        "-g",     
+        // Class output path
+        "-d", outputPath.getAbsolutePath(),
+        // Source file(s)
+        javaSource.getAbsolutePath() };
+    
     final StringWriter compilerMessages = new StringWriter();
 
     Object result = compiler
