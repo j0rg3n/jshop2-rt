@@ -4,15 +4,19 @@
 	<groupId>com.gamalocus</groupId>
 	<artifactId>jshop2rt</artifactId>
 	<name>JSHOP2-rt</name>
-	<version>0.0.1-SNAPSHOT</version>
-	<description/>
-	
+	<version>1.0.1-SNAPSHOT</version>
+	<description />
+
 	<scm>
-        <connection>scm:svn:http://jshop2-rt.googlecode.com/svn/trunk/</connection>
-        <developerConnection>scm:svn:https://jshop2-rt.googlecode.com/svn/trunk/</developerConnection>
-        <url>http://code.google.com/p/jshop2-rt/</url>
-    </scm>
-    
+		<connection>
+			scm:svn:http://jshop2-rt.googlecode.com/svn/trunk/
+		</connection>
+		<developerConnection>
+			scm:svn:https://jshop2-rt.googlecode.com/svn/trunk/
+		</developerConnection>
+		<url>http://code.google.com/p/jshop2-rt/</url>
+	</scm>
+
 	<distributionManagement>
 		<repository>
 			<id>gamalocus.com-dev</id>
@@ -62,11 +66,11 @@
 		</plugins>
 	</build>
 
-  <dependencies>
-    <dependency>
-      <groupId>antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>20030911</version>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>20030911</version>
+		</dependency>
+	</dependencies>
 </project>
