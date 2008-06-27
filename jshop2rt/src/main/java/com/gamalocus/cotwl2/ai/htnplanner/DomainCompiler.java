@@ -33,7 +33,7 @@ public class DomainCompiler
    * @throws TokenStreamException 
    * @throws RecognitionException 
    */
-  public static void generateDomainCode(File inputPath, Class<? extends Domain> domainClass, File outputPath) throws Exception
+  public static <T extends Domain> void generateDomainCode(File inputPath, Class<T> domainClass, File outputPath) throws Exception
   {
     logger.info(String.format("Class output: %s.", outputPath.getAbsolutePath()));
 
