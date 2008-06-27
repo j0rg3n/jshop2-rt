@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
 
+import com.gamalocus.jshop2rt.Domain;
 import com.gamalocus.jshop2rt.InternalDomain;
 
 public class DomainCompiler 
@@ -32,7 +33,7 @@ public class DomainCompiler
    * @throws TokenStreamException 
    * @throws RecognitionException 
    */
-  public static void generateDomainCode(File inputPath, Class<?> domainClass, File outputPath) throws Exception
+  public static void generateDomainCode(File inputPath, Class<? extends Domain> domainClass, File outputPath) throws Exception
   {
     logger.info(String.format("Class output: %s.", outputPath.getAbsolutePath()));
 
@@ -110,7 +111,7 @@ public class DomainCompiler
   /**
    * FIXME Non-atomic, may leave stuff behind on partial completion.
    */
-  public static File compileToTempFolder(File sourcePath, Class<?> domainClass) throws Exception
+  public static File compileToTempFolder(File sourcePath, Class<? extends Domain> domainClass) throws Exception
   {
     File tempPlannerClassPath = File.createTempFile(DomainCompiler.class.getName(), "");
     tempPlannerClassPath.delete();
