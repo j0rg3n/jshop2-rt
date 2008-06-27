@@ -1,17 +1,15 @@
 package com.gamalocus.jshop2rt;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
-import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import com.gamalocus.jshop2rt.Predicate.Namespace;
@@ -181,7 +179,7 @@ public class State implements Serializable
         while (ax == null)
         {
           //-- If there are no more axioms to be looked at, return null.
-          if (whichAxiom == axioms[p.getHead()].length)
+          if (p.getHead() >= axioms.length || whichAxiom == axioms[p.getHead()].length)
             return null;
 
           //-- Try the next axiom whose head matches the head of the given
@@ -260,8 +258,8 @@ public class State implements Serializable
   
   public class SetAndList<T> implements Iterable<T>
   {
-    private final Map<T, Integer> map;
-    private final List<T> list;
+    private final HashMap<T, Integer> map;
+    private final Vector<T> list;
     
     public SetAndList()
     {
@@ -269,10 +267,11 @@ public class State implements Serializable
       this.list = new Vector<T>();
     }
 
+    @SuppressWarnings("unchecked")
     public SetAndList(SetAndList<T> other)
     {
-      this.map = new HashMap<T, Integer>(other.map);
-      this.list = new Vector<T>(other.list);
+      this.map = (HashMap<T, Integer>) other.map.clone();
+      this.list = (Vector<T>) other.list.clone();
     }
 
     public boolean add(T e)
@@ -369,11 +368,11 @@ public class State implements Serializable
   
   /** Log of elements added during planning. 
    */
-  private final Set<Predicate> addedAtoms = new HashSet<Predicate>();
+  private final Map<Predicate, String> addedAtoms = new HashMap<Predicate, String>();
 
   /** Log of elements removed during planning. 
    */
-  private final Set<Predicate> removedAtoms = new HashSet<Predicate>();
+  private final Map<Predicate, String> removedAtoms = new HashMap<Predicate, String>();
   
   /**
    * If true, we will log additions and removals.
@@ -425,6 +424,31 @@ public class State implements Serializable
 
     return copy;
   }
+  
+  /**
+   * Get description of location of first caller outside of the given border class.
+   */
+  private static String getCallLocation(Class<?> border)
+  {
+    StackTraceElement stack[] = new Throwable().getStackTrace();
+    final String borderName = border.getName();
+    
+    // Forward the pointer until we find the border.
+    int i;
+    for (i = 0; i < stack.length && 
+      !stack[i].getClassName().equals(borderName); ++i) {}
+
+    // Forward the pointer past the border.
+    for (i = 0; i < stack.length && 
+      stack[i].getClassName().equals(borderName); ++i) {}
+    
+    return i == stack.length ? "unknown position" :
+      String.format("%s.%s(%s:%d)", 
+          stack[i].getClassName(), 
+          stack[i].getMethodName(),
+          stack[i].getFileName(),
+          stack[i].getLineNumber());
+  }
 
   public boolean isLoggingEnabled()
   {
@@ -441,13 +465,13 @@ public class State implements Serializable
    */
   public void reset()
   {
-    for (Predicate p : addedAtoms)
+    for (Predicate p : addedAtoms.keySet())
     {
       del(p);
     }
     addedAtoms.clear();
     
-    for (Predicate p : removedAtoms)
+    for (Predicate p : removedAtoms.keySet())
     {
       del(p);
     }
@@ -457,13 +481,13 @@ public class State implements Serializable
   public ArrayList<String> getModifications(Domain domain)
   {
     ArrayList<String> mods = new ArrayList<String>();
-    for (Predicate p : addedAtoms)
+    for (Entry<Predicate, String> e : addedAtoms.entrySet())
     {
-      mods.add("+" + p.toString(domain, Namespace.LOGICAL_PREDICATE));
+      mods.add("+" + e.getKey().toString(domain, Namespace.LOGICAL_PREDICATE) + " at " + e.getValue());
     }
-    for (Predicate p : removedAtoms)
+    for (Entry<Predicate, String> e : removedAtoms.entrySet())
     {
-      mods.add("-" + p.toString(domain, Namespace.LOGICAL_PREDICATE));
+      mods.add("-" + e.getKey().toString(domain, Namespace.LOGICAL_PREDICATE) + " at " + e.getValue());
     }
     Collections.sort(mods, new Comparator<String>() {
       public int compare(String o1, String o2)
@@ -522,9 +546,9 @@ public class State implements Serializable
     //-- Otherwise: Add the predicate and return true.
     final boolean result = tails.add(p.getParam());
 
-    if (logChanges && result && !removedAtoms.remove(p))
+    if (logChanges && result && removedAtoms.remove(p) == null)
     {
-      addedAtoms.add(p);
+      addedAtoms.put(p, getCallLocation(State.class));
     }
 
     return result;
@@ -596,9 +620,9 @@ public class State implements Serializable
     //-- Otherwise: There was nothing to delete, so return -1.
     final int result = vec.remove(p.getParam());
     
-    if (logChanges && result != -1 && !addedAtoms.remove(p))
+    if (logChanges && result != -1 && addedAtoms.remove(p) == null)
     {
-      removedAtoms.add(p);
+      removedAtoms.put(p, getCallLocation(State.class));
     }
 
     return result;
@@ -773,9 +797,9 @@ public class State implements Serializable
       // not to cause a NullPointerException.
       atoms.get(np.getHead()).add(np.getNumber(), np.getParam());
       
-      if (logChanges && !removedAtoms.remove(np.getPredicate()))
+      if (logChanges && removedAtoms.remove(np.getPredicate()) == null)
       {
-        addedAtoms.add(np.getPredicate());
+        addedAtoms.put(np.getPredicate(), getCallLocation(State.class));
       }
     }
 

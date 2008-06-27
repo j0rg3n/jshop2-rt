@@ -299,6 +299,27 @@ public class JSHOP2 implements Serializable
     {
       return false;
     }
+    else if (stack.size() >= recursionLimit)
+    {
+      StringBuffer buf = new StringBuffer();
+      buf.append("Recursion limit exceeded.");
+      
+      if (logger.isLoggable(Level.FINEST))
+      {
+        buf.append(" Stack trace:");
+        int level = stack.size();
+        for (Frame f : stack)
+        {
+          buf.append("\n\t").append(level).append(": ").append(f.toString(domain));
+          level--;
+        }
+      }
+      logger.warning(buf.toString());
+      
+      state.reset();
+      
+      return false;  
+    }
     
     //-- The local variables we need every time this function is called.
     final Frame v = stack.peek();
@@ -306,27 +327,6 @@ public class JSHOP2 implements Serializable
     switch (v.pc)
     {
     case A:
-      if (stack.size() >= recursionLimit)
-      {
-        StringBuffer buf = new StringBuffer();
-        buf.append("Recursion limit exceeded.");
-        
-        if (logger.isLoggable(Level.FINEST))
-        {
-          buf.append(" Stack trace:");
-          int level = stack.size();
-          for (Frame f : stack)
-          {
-            buf.append("\n\t").append(level).append(": ").append(f.toString(domain));
-            level--;
-          }
-        }
-        logger.warning(buf.toString());
-        
-        _return(false);
-        break;  
-      }
-      
       //-- Find all the tasks that we have the option to achieve right now. This
       //-- equals to the first task in the current task list if it is ordered, or
       //-- the first task in all the subtasks of the current task list if it is
