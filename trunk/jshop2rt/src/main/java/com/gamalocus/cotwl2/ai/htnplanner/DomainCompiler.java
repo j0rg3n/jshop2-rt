@@ -99,7 +99,7 @@ public class DomainCompiler
 
     Object result = compiler
     .getMethod("compile", String[].class, PrintWriter.class)
-    .invoke(args, new PrintWriter(compilerMessages));
+    .invoke(null, args, new PrintWriter(compilerMessages));
 
     int status = ((Integer)result).intValue();
     if (status != 0)
