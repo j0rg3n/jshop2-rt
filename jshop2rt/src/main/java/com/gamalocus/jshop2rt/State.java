@@ -465,6 +465,9 @@ public class State implements Serializable
    */
   public void reset()
   {
+    // Avoid causing concurrent modifications.
+    logChanges = false;
+    
     for (Predicate p : addedAtoms.keySet())
     {
       del(p);
@@ -473,7 +476,7 @@ public class State implements Serializable
     
     for (Predicate p : removedAtoms.keySet())
     {
-      del(p);
+      add(p);
     }
     removedAtoms.clear();
   }
