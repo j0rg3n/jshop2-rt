@@ -3,7 +3,7 @@ package com.gamalocus.jshop2rt;
 /**
  * Default cost model.
  * 
- * @author jorgen
+ * @author j0rg3n
  */
 public class DoubleCost implements Cost
 {

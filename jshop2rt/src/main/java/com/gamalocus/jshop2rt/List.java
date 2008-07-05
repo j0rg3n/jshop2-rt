@@ -20,7 +20,7 @@ public class List extends CompileTimeObject implements Iterable<Term>, Serializa
   /**
    * Iterators for lists that have lists as their tails.
    *  
-   * @author jorgen
+   * @author j0rg3n
    */
   public static class ListIterator implements Iterator<Term>
   {
