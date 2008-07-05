@@ -2,7 +2,7 @@
 
 header
 {
-  package net.gamalocus.jshop2rt;
+  package com.gamalocus.jshop2rt;
 
   import java.io.IOException;
   import java.util.LinkedList;
@@ -763,7 +763,7 @@ terml returns [List retVal] :
   )*
   {
     //-- Create the object that represents this term list.
-    retVal = List.MakeList(list);
+    retVal = List.makeList(list);
   }
 ;
 
