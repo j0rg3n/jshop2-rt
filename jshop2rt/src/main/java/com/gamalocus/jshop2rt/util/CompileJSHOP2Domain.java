@@ -35,7 +35,7 @@ public class CompileJSHOP2Domain extends Task
   {
     this.destdir = destdir;
   }
-
+  
   @Override
   public void execute() throws BuildException
   {
