@@ -33,11 +33,6 @@ public class InternalDomain
    */
   private String outputPackage = DEFAULT_OUTPUT_PACKAGE; 
   
-  /** The number of solution plans per planning problem that the user has
-   *  requested from this object.
-   */
-  private int planNo;
-
   /** A <code>Vector</code> of axioms seen so far in the domain description.
    *  Each member is of type <code>InternalAxiom</code>.
   */
@@ -124,17 +119,12 @@ public class InternalDomain
    *  @param fout
    *          the file to which the generated java file should be written. May be <code>null</code>, in which
    *          case the output is written to a file in the current directory.
-   *  @param planNoIn
-   *          the number of solution plans per planning problem that the user
-   *          has requested from this object.
    *  @param outputPackage
    *  	      Package header for generated java files.
    *  @throws IOException
   */
-  public InternalDomain(File fin, File fout, int planNoIn, String outputPackageIn) throws IOException
-  {
-    planNo = planNoIn;
-    
+  public InternalDomain(File fin, File fout, String outputPackageIn) throws IOException
+  { 
     outputPackage = outputPackageIn;
 
     axioms = new Vector<InternalAxiom>();
@@ -737,13 +727,14 @@ public class InternalDomain
       s += endl + tl.getInitCode(String.format("Task list of problem #%d", problemIdx), "tl") + endl;
 
       //-- Define the thread that will solve this planning problem.
-      s += "\t\tthread = new SolverThread(jShop2Planner, tl, " + planNo + ");" + endl;
+      s += "\t\tthread = new SolverThread(jShop2Planner, tl, Integer.MAX_VALUE);" + endl;
 
       //-- Start the thread that will solve this planning problem.
       s += "\t\tthread.start();" + endl + endl;
 
       //-- Wait till thread is done, since JSHOP2's data members are static and
       //-- can handle only one problem at a time.
+      // FIXME JSHOP2 is now thread-safe. 
       s += "\t\ttry {" + endl + "\t\t\twhile (thread.isAlive())" + endl;
       s += "\t\t\t\tThread.sleep(500);" + endl;
       s += "\t\t} catch (InterruptedException e) {" + endl + "\t\t}" + endl;
@@ -862,88 +853,73 @@ public class InternalDomain
   */
   public static void main(String[] args) throws Exception
   {
-    //-- The number of solution plans to be returned.
-    int planNo = -1;
-
-    
-    //-- Handle the number of solution plans the user wants to be returned.
-    if (args.length >= 1 || args[0].substring(0, 2).equals("-r")) {
-      if (args[0].equals("-r"))
-        planNo = 1;
-      else if (args[0].equals("-ra"))
-        planNo = Integer.MAX_VALUE;
-      else try {
-        planNo = Integer.parseInt(args[0].substring(2));
-      } catch (NumberFormatException e) {
-      }
-    }
-
     //-- Check the number of arguments.
-    if (((args.length != 2) || planNo <= 0) && (args.length != 1))
+    if (args.length == 1)
     {
-      System.err.println("usage: java JSHOP2Parser " +
-                         "[-r|-ra|-rSomePositiveInteger] input");
+      System.err.println(String.format("usage: java %s input [output [output package]]",
+          InternalDomain.class.getName()));
       System.exit(1);
     }
-    
-    // TODO Make output package configurable on the command-line.
-    String outputPackage = DEFAULT_OUTPUT_PACKAGE;
+
+    final File input = new File(args[0]);
+    final File output = args.length >= 2 ? new File(args[1]) : null;
+    final String outputPackage = args.length >= 3 ? args[2] : DEFAULT_OUTPUT_PACKAGE;
 
     //-- If this is a planning problem, call the 'command' rule in the parser.
-	InternalDomain internalDomain;
-    if (planNo != -1)
-	{
-    	internalDomain = new InternalDomain(new File(args[1]), null, planNo, outputPackage);
-		internalDomain.parser.command();
-
-	    //-- Open the file with the appropriate name.
-	    BufferedWriter dest = new BufferedWriter(new FileWriter(internalDomain.outputFile));
-
-	    //-- Write the String.
-	    String s = internalDomain.getOutput();
-	    dest.write(s, 0, s.length());
-
-	    //-- Close the file.
-	    dest.close();
-
-	    //-- Open another file with extension '.txt' to store the String names of
-	    //-- the constant symbols, the compound tasks and the primitive tasks in
-	    //-- the domain description. This data will be used when compiling planning
-	    //-- problems in this domain.
-	    dest = new BufferedWriter(new FileWriter(internalDomain.getSymbolDumpOutputPath()));
-
-	    //-- Store the constant symbols.
-	    dumpStringArray(dest, internalDomain.constants);
-
-	    //-- Store the compound tasks.
-	    dumpStringArray(dest, internalDomain.compoundTasks);
-
-	    //-- Store the primitive tasks.
-	    dumpStringArray(dest, internalDomain.primitiveTasks);
-
-	    //-- Close the file.
-	    dest.close();
-	}
-	else
-	{
-		internalDomain = new InternalDomain(new File(args[0]), null, -1, outputPackage);
-		internalDomain.parser.domain();
-
-		BufferedWriter dest;
-
-	    //-- Open the file with the appropriate name.
-	    dest = new BufferedWriter(new FileWriter(internalDomain.getProblemOutputPath()));
-
-	    //-- Write the String.
-	    String s = internalDomain.getOutput();
-	    dest.write(s, 0, s.length());
-
-	    //-- Close the file.
-	    dest.close();	
-	}
+    final boolean isProblem = false; 
     
+    final InternalDomain internalDomain = new InternalDomain(input, output, outputPackage);
+    if (!isProblem)
+    {
+      internalDomain.parser.domain();
+
+      //-- Open the file with the appropriate name.
+      BufferedWriter dest = new BufferedWriter(new FileWriter(internalDomain.outputFile));
+
+      //-- Write the String.
+      String s = internalDomain.getOutput();
+      dest.write(s, 0, s.length());
+
+      //-- Close the file.
+      dest.close();
+
+      //-- Open another file with extension '.txt' to store the String names of
+      //-- the constant symbols, the compound tasks and the primitive tasks in
+      //-- the domain description. This data will be used when compiling planning
+      //-- problems in this domain.
+      dest = new BufferedWriter(new FileWriter(internalDomain.getSymbolDumpOutputPath()));
+
+      //-- Store the constant symbols.
+      dumpStringArray(dest, internalDomain.constants);
+
+      //-- Store the compound tasks.
+      dumpStringArray(dest, internalDomain.compoundTasks);
+
+      //-- Store the primitive tasks.
+      dumpStringArray(dest, internalDomain.primitiveTasks);
+
+      //-- Close the file.
+      dest.close();
+    }
+    else
+    {
+      internalDomain.parser.command();
+
+      BufferedWriter dest;
+
+      //-- Open the file with the appropriate name.
+      dest = new BufferedWriter(new FileWriter(internalDomain.getProblemOutputPath()));
+
+      //-- Write the String.
+      String s = internalDomain.getOutput();
+      dest.write(s, 0, s.length());
+
+      //-- Close the file.
+      dest.close();	
+    }
+
   }
-  
+
   private File getSymbolDumpOutputPath()
   {
 	return new File(outputFile.getParent(), replaceExtension(outputFile.getName(), ".txt"));

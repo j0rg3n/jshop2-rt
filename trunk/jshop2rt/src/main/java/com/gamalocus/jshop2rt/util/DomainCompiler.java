@@ -93,7 +93,7 @@ public class DomainCompiler
     // TODO Emit java code as string, and use a SimpleJavaFileObject subclass
     // to wrap it. 
     InternalDomain generator = new InternalDomain(domainSource, javaSource, 
-        Integer.MAX_VALUE, domainClass.getPackage().getName());
+        domainClass.getPackage().getName());
 
     generator.getParser().domain();
 
