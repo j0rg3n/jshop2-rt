@@ -291,6 +291,11 @@ public class JSHOP2 implements Serializable
   
   /**
    * Run a single time slice.
+   * 
+   * FIXME Time-slicing implementation is inefficient. Re-implement as 
+   * explicitly time-sliced with basis in the algorithm as described 
+   * in the original SHOP2 paper. 
+   * 
    * @return <code>true</code> if there are more slices left.
    */
   private boolean runInternal()

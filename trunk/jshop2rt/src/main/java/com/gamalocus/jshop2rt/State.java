@@ -17,6 +17,9 @@ import com.gamalocus.jshop2rt.Predicate.Namespace;
 
 
 /** This class is used to represent the current state of the world.
+ * 
+ * FIXME Implement more of the optimizations suggested in 
+ * Russell, Norvig (2003). Artificial Intelligence: a Modern Approach. Ch. 9.
  *
  *  @author Okhtay Ilghami
  *  @author <a href="http://www.cs.umd.edu/~okhtay">http://www.cs.umd.edu/~okhtay</a>
