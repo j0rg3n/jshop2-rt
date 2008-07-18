@@ -85,6 +85,21 @@ public boolean equals(Object obj)
   {
     return number;
   }
+  
+  public int intValue()
+  {
+	  return (int)number;
+  }
+
+  public double floatValue()
+  {
+	  return (float)number;
+  }
+
+  public double doubleValue()
+  {
+	  return (double)number;
+  }
 
   /** This function always returns <code>true</code> because a numerical term
    *  is always ground by definition.
