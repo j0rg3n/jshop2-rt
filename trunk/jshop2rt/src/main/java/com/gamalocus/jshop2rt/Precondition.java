@@ -43,6 +43,11 @@ public abstract class Precondition
    *  <code>reset</code> function.
   */
   private boolean firstCall;
+  
+  /** The number of pre-condition statements we could accomplish before 
+   *  giving up in the {link {@link #nextBindingHelper(State)}. 
+   */
+  public int bestMatch = 0;
 
   /** This abstract function binds the logical expression to a given binding.
    *

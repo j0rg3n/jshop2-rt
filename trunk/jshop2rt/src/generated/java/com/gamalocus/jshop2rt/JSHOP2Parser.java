@@ -199,6 +199,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		switch ( LA(1)) {
 		case LP:
 		{
+			Token lineFrom = LT(1);
 			match(LP);
 			pn = LT(1);
 			match(ID);
@@ -211,7 +212,10 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			//-- Create the logical atom.
 			retVal = new Predicate(index, vars.size(), new TermList(l));
 			
+			Token lineTo = LT(1);
 			match(RP);
+			
+			retVal.setSourcePos(lineFrom, lineTo);
 			break;
 		}
 		case VARID:
@@ -225,6 +229,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			retVal = new Predicate(vars.indexOf(var.getText()),
 			vars.size());
 			
+			retVal.setSourcePos(var, var);
 			break;
 		}
 		default:
@@ -255,6 +260,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		switch ( LA(1)) {
 		case LP:
 		{
+			Token lineFrom = LT(1);
 			match(LP);
 			{
 			switch ( LA(1)) {
@@ -302,11 +308,13 @@ public JSHOP2Parser(ParserSharedInputState state) {
 				
 			} while (true);
 			}
+			Token lineTo = LT(1);
 			match(RP);
 			
 			//-- Create the object that represents this task list.
 			retVal = TaskList.createTaskList(subtasks, ordered);
 			
+			retVal.setSourcePos(lineFrom, lineTo);
 			break;
 		}
 		case NIL:
@@ -410,6 +418,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		//-- The argument list of the head of the method.
 		List tn;
 		
+		Token lineFrom = LT(1);
 		match(LP);
 		match(METHOD);
 		match(LP);
@@ -424,7 +433,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			if ((_tokenSet_2.member(LA(1)))) {
 				
 				//-- Generate a default label for this branch.
-				branchLabel = "Method" + domain.getMethodNo() + "Branch" + labels.size();
+				branchLabel = "Method" + domain.getMethodNo() + "Branch" + labels.size()+"(text:"+mn.getText()+",line:"+mn.getLine()+",col:"+mn.getColumn()+")";
 				
 				{
 				switch ( LA(1)) {
@@ -474,9 +483,10 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		//-- Create the head of the method.
 		Predicate p = new Predicate(index, vars.size(), new TermList(tn));
 		
+		InternalMethod method;
 		//-- Create the object that represents the method, and add it to the list
 		//-- of the methods in the domain.
-		domain.addMethod(new InternalMethod(p, labels, pres, subs));
+		domain.addMethod(method = new InternalMethod(p, labels, pres, subs));
 		
 		//-- The scope for the variables in a method is within that method, so as
 		//-- soon as we get out of the method body we should empty our list of
@@ -486,7 +496,10 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		
 		vars.clear();
 		
+		Token lineTo = LT(1);
 		match(RP);
+		
+		method.setSourcePos(lineFrom, lineTo);
 	}
 	
 	public final void op() throws RecognitionException, TokenStreamException {
@@ -509,6 +522,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		//-- The argument list of the head of the operator.
 		List tn;
 		
+		Token lineFrom = LT(1);
 		match(LP);
 		match(OPERATOR);
 		match(LP);
@@ -548,9 +562,10 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		//-- Create the head of the operator.
 		Predicate p = new Predicate(index, vars.size(), new TermList(tn));
 		
+		InternalOperator operator;
 		//-- Create the object that represents the operator, and add it to the
 		//-- list of the operators in the domain.
-		domain.addOperator(new InternalOperator(p, pre, del, add, cost));
+		domain.addOperator(operator = new InternalOperator(p, pre, del, add, cost));
 		
 		//-- The scope for the variables in an operator is within that operator,
 		//-- so as soon as we get out of the operator body we should empty our
@@ -560,7 +575,10 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		
 		vars.clear();
 		
+		Token lineTo = LT(1);
 		match(RP);
+		
+		operator.setSourcePos(lineFrom, lineTo);
 	}
 	
 	public final void axiom() throws RecognitionException, TokenStreamException {
@@ -585,6 +603,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		//-- The head of the axiom (i.e., the predicate it can be used to prove).
 		Predicate p;
 		
+		Token lineFrom = LT(1);
 		match(LP);
 		ah = LT(1);
 		match(AXIOM);
@@ -596,7 +615,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			if ((_tokenSet_2.member(LA(1)))) {
 				
 				//-- Generate a default label for this branch.
-				branchLabel = "Axiom" + domain.getAxiomNo() + "Branch" + labels.size();
+				branchLabel = "Axiom" + domain.getAxiomNo() + "Branch" + labels.size()+"(line:"+ah.getLine()+",col:"+ah.getColumn()+")";
 				
 				{
 				switch ( LA(1)) {
@@ -639,9 +658,10 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		
 		p.setVarCount(vars.size());
 		
+		InternalAxiom axiom;
 		//-- Create the object that represents the axiom, and add it to the list
 		//-- of the axioms in the domain.
-		domain.addAxiom(new InternalAxiom(p, a, labels));
+		domain.addAxiom(axiom = new InternalAxiom(p, a, labels));
 		
 		//-- The scope for the variables in an axiom is within that axiom, so as
 		//-- soon as we get out of the operator body we should empty our list of
@@ -650,8 +670,10 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		varsMaxSize = vars.size();
 		
 		vars.clear();
-		
+		Token lineTo = LT(1);
 		match(RP);
+		
+		axiom.setSourcePos(lineFrom.getLine(), lineFrom.getColumn(), lineTo.getLine(), lineFrom.getLine());
 	}
 	
 	public final List  terml() throws RecognitionException, TokenStreamException {
@@ -708,16 +730,20 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			
 		}
 		else if ((LA(1)==LP) && (LA(2)==FIRST)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(FIRST);
 			lExp=le();
+			Token lineTo = LT(1);
 			match(RP);
 			
 			//-- Create the object that represents this logical precondition.
 			retVal = new LogicalPrecondition(lExp, true);
 			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else if ((LA(1)==LP) && (LA(2)==SORT)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(SORT);
 			vn = LT(1);
@@ -754,6 +780,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			}
 			}
 			lExp=le();
+			Token lineTo = LT(1);
 			match(RP);
 			
 			String s = vn.getText();
@@ -762,18 +789,19 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			if (!vars.contains(s))
 			vars.add(s);
 			
-				  //-- If no function is specified, use '<' as the default function.
-				  if (func == null || func.equals("StdLib.less"))
-				    func = "CompLess";
-				  else if (func.equals("StdLib.more"))
-				  	func = "CompMore";
+           //-- If no function is specified, use '<' as the default function.
+           if (func == null || func.equals("StdLib.less"))
+             func = "CompLess";
+           else if (func.equals("StdLib.more"))
+             func = "CompMore";
 				  
-				  String instanceId = String.format("%s%d", func.toLowerCase(), vars.indexOf(s));
-				  domain.addComparator(func, instanceId, Integer.toString(vars.indexOf(s)));
+           String instanceId = String.format("%s%d", func.toLowerCase(), vars.indexOf(s));
+           domain.addComparator(func, instanceId, Integer.toString(vars.indexOf(s)));
 				  
-				  //-- Create the object that represents this logical precondition.
-				  retVal = new LogicalPrecondition(lExp, String.format("((%s)owner).%s", domain.getName(), instanceId));
-			
+           //-- Create the object that represents this logical precondition.
+           retVal = new LogicalPrecondition(lExp, String.format("((%s)owner).%s", domain.getName(), instanceId));
+           
+           retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else {
 			throw new NoViableAltException(LT(1), getFilename());
@@ -987,19 +1015,22 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			
 			//-- The atomic delete/add element.
 			retVal = new DelAddAtomic(p);
-			
 		}
 		else if ((LA(1)==LP) && (LA(2)==PROTECTION)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(PROTECTION);
 			p=la();
+			Token lineTo = LT(1);
 			match(RP);
 			
 			//-- The protection delete/add element.
 			retVal = new DelAddProtection(p);
 			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else if ((LA(1)==LP) && (LA(2)==FORALL)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(FORALL);
 			
@@ -1086,7 +1117,10 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			//-- Create the delete/add element and return it.
 			retVal = new DelAddForAll(exp, atoms);
 			
+			Token lineTo = LT(1);
 			match(RP);
+			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else {
 			throw new NoViableAltException(LT(1), getFilename());
@@ -1127,6 +1161,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			
 		}
 		else if ((LA(1)==LP) && (_tokenSet_8.member(LA(2)))) {
+			Token lineFrom = LT(1);
 			match(LP);
 			{
 			switch ( LA(1)) {
@@ -1175,9 +1210,13 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			else
 			retVal = new LogicalExpressionConjunction(vec);
 			
+			Token lineTo = LT(1);
 			match(RP);
+			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else if ((LA(1)==LP) && (LA(2)==OR)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(OR);
 			{
@@ -1206,23 +1245,31 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			else
 			retVal = new LogicalExpressionDisjunction(vec);
 			
+			Token lineTo = LT(1);
 			match(RP);
+			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else if ((LA(1)==LP) && (LA(2)==NOT)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(NOT);
 			lExp=le();
+			Token lineTo = LT(1);
 			match(RP);
 			
 			//-- A negative logical expression.
 			retVal = new LogicalExpressionNegation(lExp);
 			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else if ((LA(1)==LP) && (LA(2)==IMPLY)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(IMPLY);
 			lExp=le();
 			lExp2=le();
+			Token lineTo = LT(1);
 			match(RP);
 			
 			//-- A logical implication.
@@ -1241,6 +1288,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			//-- its premise and its consequence.
 			retVal = new LogicalExpressionDisjunction(disjunction);
 			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else if ((LA(1)==LP||LA(1)==VARID) && (_tokenSet_9.member(LA(2)))) {
 			p=la();
@@ -1250,6 +1298,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			
 		}
 		else if ((LA(1)==LP) && (LA(2)==FORALL)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(FORALL);
 			{
@@ -1287,18 +1336,22 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			}
 			lExp=le();
 			lExp2=le();
+			Token lineTo = LT(1);
 			match(RP);
 			
 			//-- A ForAll logical expression
 			retVal = new LogicalExpressionForAll(lExp, lExp2);
 			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else if ((LA(1)==LP) && (LA(2)==ASSIGN)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(ASSIGN);
 			vn = LT(1);
 			match(VARID);
 			t=term();
+			Token lineTo = LT(1);
 			match(RP);
 			
 			String s = vn.getText();
@@ -1310,12 +1363,15 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			//-- An assigment logical expression.
 			retVal = new LogicalExpressionAssignment(vars.indexOf(s), t);
 			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else if ((LA(1)==LP) && (LA(2)==CALL)) {
+			Token lineFrom = LT(1);
 			match(LP);
 			match(CALL);
 			func=fid();
 			param=terml();
+			Token lineTo = LT(1);
 			match(RP);
 			
 			//-- If this function call is not one implemented in the standard
@@ -1329,6 +1385,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 			//-- A call logical expression.
 			retVal = new LogicalExpressionCall(new TermCall(param, func));
 			
+			retVal.setSourcePos(lineFrom, lineTo);
 		}
 		else {
 			throw new NoViableAltException(LT(1), getFilename());
@@ -1355,7 +1412,7 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		//-- The index of the head of this task atom.
 		int tn;
 		
-		
+		Token lineFrom = LT(1);
 		match(LP);
 		{
 		switch ( LA(1)) {
@@ -1421,7 +1478,11 @@ public JSHOP2Parser(ParserSharedInputState state) {
 		immediate,
 		isPrimitive);
 		
+		Token lineTo = LT(1);
 		match(RP);
+		
+		retVal.setSourcePos(lineFrom, lineTo);
+		
 		return retVal;
 	}
 	

@@ -40,6 +40,10 @@ public class Predicate extends CompileTimeObject implements Serializable
    *  represents its index. Otherwise, its value will be -1.
   */
   private final int varIdx;
+  
+  /** Temporary string used to "save" the name of the predicate for {@link #toString()}
+   */
+  private String asString = null;
 
   /**
    * A unique ID to identify this predicate.  Used in conjunction with JSHOP2GUI to allow
@@ -280,7 +284,7 @@ public class Predicate extends CompileTimeObject implements Serializable
   {
     //-- If this predicate is a variable symbol, just print it as a variable.
     if (isVar())
-      return "VAR" + varIdx;
+      return asString = "VAR" + varIdx;
 
     String headName = "";
     switch (namespace)
@@ -304,14 +308,14 @@ public class Predicate extends CompileTimeObject implements Serializable
     if (param instanceof TermList)
       if (param.isNil())
         //-- Converting (a . NIL) to (a).
-        return  s + ")";
+        return  asString = s + ")";
       else
         //-- Converting (a . (b)) to (a b).
-        return s + " " + ((TermList)param).getList().toString() + ")";
+        return asString = s + " " + ((TermList)param).getList().toString() + ")";
     //-- If the argument list is not a list term (which should not happen
     //-- usually, but there is no reason to assume that it will not happen.
     else
-      return s + "." + param + ")";
+      return asString = s + "." + param + ")";
   }
 
   /**
@@ -321,5 +325,13 @@ public class Predicate extends CompileTimeObject implements Serializable
    */
   public int getID() {
     return ID;
+  }
+  
+  @Override
+  public String toString()
+  {
+    if(asString != null)
+      return asString;
+    return "["+this.getClass().getSimpleName()+":"+head+"]";
   }
 }

@@ -66,6 +66,10 @@ public class InternalAxiom extends InternalElement
 
     //-- The header of the class for this axiom at run time. Note the use of
     //-- 'getCnt()' to make the name of this class unique.
+    s += "\t/**" + endl;
+    s += "\t * " + label + endl;
+    s += "\t * " + getSourcePosForComment() + endl;
+    s += "\t */" + endl;
     s += "\tpublic static class Axiom" + getCnt() + " extends Axiom" + endl + "{" + endl;
 
     //-- The constructor of the class.
@@ -79,6 +83,15 @@ public class InternalAxiom extends InternalElement
     //-- axiom as its parameters.
     s += "\t\t\tsuper(owner, " + getHead().toCode(String.format("Head of %s", label)) + ", " + branches.size() + ");";
     s += endl + "\t\t}" + endl + endl;
+
+    //-- Implement the toString function
+    s += "\t\t@Override"+endl+"\t\tpublic String toString()" + endl + "\t\t{"+endl;
+    
+    //-- Define toString as the label
+    s += "\t\t\treturn \""+label+" "+getSourcePosForToString()+"\";"+endl;
+    
+    //-- Close the function definition
+    s += "\t\t}" + endl;
 
     //-- The function that returns an iterator that can be used to find all the
     //-- bindings that satisfy a given precondition of this axiom and return

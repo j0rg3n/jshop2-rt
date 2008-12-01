@@ -2,6 +2,8 @@ package com.gamalocus.jshop2rt;
 
 import java.util.Vector;
 
+import antlr.Token;
+
 /** Each method at compile time is represented as an instance of this class.
  *
  *  @author Okhtay Ilghami
@@ -84,9 +86,16 @@ public class InternalMethod extends InternalElement
 
     //-- The header of the class for this method at run time. Note the use of
     //-- 'getCnt()' to make the name of this class unique.
-    s += "\tpublic static class Method" + getCnt() + " extends Method" + endl + "{" + endl;
+    s += "\t/**" + endl;
+    s += "\t * " + label + endl;
+    s += "\t * " + getSourcePosForComment() + endl;
+    s += "\t */" + endl;
+    s += "\tpublic static class Method" + getCnt() + " extends Method" + endl + "\t{" + endl;
 
     //-- The constructor of the class.
+    s += "\t/**" + endl;
+    s += "\t * " + label + endl;
+    s += "\t */" + endl;
     s += "\t\tpublic Method" + getCnt() + "(Domain owner)" + endl + "\t\t{" + endl;
 
     //-- Call the constructor of the base class (class 'Method') with the code
@@ -130,6 +139,15 @@ public class InternalMethod extends InternalElement
         s += (subs.get(i)).toCode(String.format("Sub-list %d of %s", i, label)) + "\t\t}" + endl + endl;
       }
     }
+
+    //-- Implement the toString function
+    s += "\t\t@Override"+endl+"\t\tpublic String toString()" + endl + "\t\t{"+endl;
+    
+    //-- Define toString as the label
+    s += "\t\t\treturn \""+label+" "+getSourcePosForToString()+"\";"+endl;
+    
+    //-- Close the function definition
+    s += "\t\t}" + endl;
 
     //-- The function that returns an iterator that can be used to find all the
     //-- bindings that satisfy a given precondition of this method and return
