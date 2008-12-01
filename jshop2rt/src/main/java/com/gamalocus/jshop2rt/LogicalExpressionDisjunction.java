@@ -58,6 +58,10 @@ public class LogicalExpressionDisjunction extends LogicalExpression
 
     //-- The header of the class for this disjunction at run time. Note the use
     //-- of 'cnt' to make the name of this class unique.
+    s += "\t/**" + endl;
+    s += "\t * " + label + endl;
+    s += "\t * " + getSourcePosForComment() + endl;
+    s += "\t */" + endl;
     s += "\tpublic static class Precondition" + cnt + " extends Precondition" + endl;
 
     //-- Defining two arrays for storing the iterators for each disjunct and
@@ -111,6 +115,15 @@ public class LogicalExpressionDisjunction extends LogicalExpression
 
     //-- If there are no more disjuncts left, return null.
     s += endl + endl + "\t\t\treturn null;" + endl + "\t\t}" + endl + endl;
+    
+    //-- Implement the toString function
+    s += "\t\t@Override"+endl+"\t\tpublic String toString()" + endl + "\t\t{"+endl;
+    
+    //-- Define toString as the label
+    s += "\t\t\treturn \""+label+" "+getSourcePosForToString()+"\";"+endl;
+    
+    //-- Close the function definition
+    s += "\t\t}" + endl;
 
     //-- Define the 'resetHelper' function.
     s += "\t\tprotected void resetHelper(State state)" + endl + "\t\t{" + endl;

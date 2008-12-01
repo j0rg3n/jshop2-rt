@@ -181,10 +181,14 @@ public class InternalOperator extends InternalElement
     //-- 'getCnt()' to make the name of this class unique.
     s += "\t/**" + endl;
     s += "\t * " + label + endl;
+    s += "\t * " + getSourcePosForComment() + endl;
     s += "\t */" + endl;
     s += "\tpublic static class Operator" + getCnt() + " extends Operator" + endl + "{" + endl;
 
     //-- The constructor of the class.
+    s += "\t/**" + endl;
+    s += "\t * " + label + endl;
+    s += "\t */" + endl;
     s += "\t\tpublic Operator" + getCnt() + "(Domain owner)" + endl + "\t\t{" + endl;
 
     //-- Call the constructor of the base class (class 'Operator') with the
@@ -256,6 +260,15 @@ public class InternalOperator extends InternalElement
 
     //-- Close the constructor.
     s += "\t\t}" + endl + endl;
+    
+    //-- Implement the toString function
+    s += "\t\t@Override"+endl+"\t\tpublic String toString()" + endl + "\t\t{"+endl;
+    
+    //-- Define toString as the label
+    s += "\t\t\treturn \""+label+" "+getSourcePosForToString()+"\";"+endl;
+    
+    //-- Close the function definition
+    s += "\t\t}" + endl;
 
     //-- The function that returns an iterator that can be used to find all the
     //-- bindings that satisfy this operator's precondition and return them

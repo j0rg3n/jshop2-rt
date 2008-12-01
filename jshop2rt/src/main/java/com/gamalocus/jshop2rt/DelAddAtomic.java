@@ -25,6 +25,7 @@ public class DelAddAtomic extends DelAddElement
   public DelAddAtomic(Predicate atomIn)
   {
     atom = atomIn;
+    setSourcePos(atomIn);
   }
 
   /** To add this atomic delete/add element to the current state of the world.

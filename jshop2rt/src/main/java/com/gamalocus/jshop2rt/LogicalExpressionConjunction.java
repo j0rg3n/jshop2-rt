@@ -59,6 +59,7 @@ public class LogicalExpressionConjunction extends LogicalExpression
     //-- of 'cnt' to make the name of this class unique.
     s += "\t/**" + endl;
     s += "\t * " + label + endl;
+    s += "\t * " + getSourcePosForComment() + endl;
     s += "\t */" + endl;
     s += "\tpublic static class Precondition" + cnt + " extends Precondition" + endl;
 
@@ -77,9 +78,12 @@ public class LogicalExpressionConjunction extends LogicalExpression
 
     //-- For each conjunct,
     for (int i = 1; i <= le.length; i++)
+    {
       //-- Set the corresponding element in the array to the code that produces
       //-- that conjunct.
+      s += "\t\t\t// " + le[i-1].getSourcePosForComment() + endl;
       s += "\t\t\tp[" + i + "] = " + le[i-1].toCode(String.format("Conjunct %d of %s", i, label)) + ";" + endl;
+    }
 
     //-- Allocate the array of bindings.
     //-- Set to one more than the number of conjuncts.  The first position
@@ -118,9 +122,21 @@ public class LogicalExpressionConjunction extends LogicalExpression
     //-- Implement the 'resetHelper' function.
     s += getInitCodeReset();
 
-    //-- Close the function definition and the class definition and return the
-    //-- resulting string.
-    return s + "\t\t}" + endl + "\t}" + endl + endl;
+    //-- Close the function definition
+    s += "\t\t}" + endl;
+    
+    //-- Implement the toString function
+    s += "\t\t@Override"+endl+"\t\tpublic String toString()" + endl + "\t\t{"+endl;
+    
+    //-- Define toString as the label
+    s += "\t\t\treturn \""+label+" "+getSourcePosForToString()+"\";"+endl;
+    
+    //-- Close the function definition
+    s += "\t\t}" + endl;
+    
+    
+    //-- Close the class definition and return the resulting string.
+    return s + "\t}" + endl + endl;
   }
 
   /**
@@ -132,7 +148,7 @@ public class LogicalExpressionConjunction extends LogicalExpression
    */
   private String getInitCodeNext()
   {
-    String s = "";
+    String s = "\t\t\tbestMatch = 0;"+endl;
     int i;
 
     //-- To be used to add appropriate number of tabs to each line of code.
@@ -151,7 +167,10 @@ public class LogicalExpressionConjunction extends LogicalExpression
     //-- Try the outer most conjunct.
     s += tabs + "b[1] = p[1].nextBinding(state);" + endl;
     //-- If there is no more binding for the outermost conjunct, return null.
-    s += tabs + "if (b[1] == null)" + endl + tabs + "\treturn null;" + endl;
+    s += tabs + "if (b[1] == null)" + endl;
+    s += tabs + "\treturn null;" + endl;
+    s += tabs + "else"+endl;
+    s += tabs + "\tbestMatch = Math.max(bestMatch, 1);"+endl;
     s += tabs + "b1changed = true;" + endl;
     
     //-- Going from third outermost conjunct inward, try to apply newly-found
@@ -168,7 +187,10 @@ public class LogicalExpressionConjunction extends LogicalExpression
       s += tabs + "b[" + i + "] = p[" + i + "].nextBinding(state);" + endl;
       //-- If no binding found, null out the next outermost conjunct so we
       //-- try another set of bindings.
-      s += tabs + "if (b[" + i + "] == null) b[" + (i-1) + "] = null;" + endl;
+      s += tabs + "if (b[" + i + "] == null)"+endl;
+      s += tabs + "\tb[" + (i-1) + "] = null;" + endl;
+      s += tabs + "else"+endl;
+      s += tabs + "\tbestMatch = Math.max(bestMatch, "+i+");"+endl;
       if ( i != le.length )
         s += tabs + "b" + i + "changed = true;" + endl;
       

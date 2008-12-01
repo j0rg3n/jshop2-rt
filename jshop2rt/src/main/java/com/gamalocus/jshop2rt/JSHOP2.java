@@ -2,10 +2,14 @@ package com.gamalocus.jshop2rt;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -180,6 +184,25 @@ public class JSHOP2 implements Serializable
           pc, j, k, tlString, e);
     }
   }
+  
+  private static class Stats implements Comparable<Stats>
+  {
+    final String val;
+    int failed;
+    int succeeded;
+    Stats(String val)
+    {
+    	this.val = val;
+    }
+	@Override
+	public int compareTo(Stats o)
+	{
+      int ret = (failed+succeeded)-(o.failed+o.succeeded);
+      if(ret == 0)
+        return val.compareTo(o.val);
+      return ret;
+	}
+  }
 
   private static final long serialVersionUID = 274536180602188365L;
 
@@ -220,6 +243,14 @@ public class JSHOP2 implements Serializable
   /** The task list to be achieved.
    */
   private final TaskList tasks;
+
+  /** A boolean indicating if we should collect info about what preconditions fail and succeed.
+   */
+  private boolean registerFailAndSuccess = true;
+  
+  /** A summary of failures/successes
+   */
+  private Hashtable<String, Stats> summary = new Hashtable<String, Stats>();
 
   /** This function finds plan(s) for a given initial task list.
    * 
@@ -631,7 +662,19 @@ public class JSHOP2 implements Serializable
                 v.p = v.m[v.j].getIterator(state, v.binding, v.k);
 
               case C_1_5_1_2_2_WHILE_V_NEXTB___V_P_NEXTBINDING_STATE__IS_NULL:
-                _next((v.nextB = v.p.nextBinding(state)) != null ? 
+            	v.nextB = v.p.nextBinding(state);
+            	if(registerFailAndSuccess)
+            	{
+	                if(v.nextB == null)
+	                {
+	                  registerPreconditionFailure(v.p);
+	                }
+	                else
+	                {
+	                  registerPreconditionSuccess(v.p);
+	                }
+            	}
+                _next(v.nextB != null ? 
                     PC.C_1_5_1_2_2_1_V_NEXTB___V_P_NEXTBINDING_STATE__IS_NOT_NULL : 
                     PC.C_1_5_1_2_3_NEXT_V_K___0___V_K___V_M_V_J__GETSUBS____LENGTH____NOT_V_FOUND__V_K__);
                 break;
@@ -728,6 +771,44 @@ public class JSHOP2 implements Serializable
     return !stack.isEmpty();
   }
 
+
+  private void registerPreconditionFailure(Precondition p)
+  {
+    Stats s = getSummary(p.toString()+"(bound: "+p.bestMatch+" conditions)");
+    s.failed++;
+  }
+  
+  private void registerPreconditionSuccess(Precondition p)
+  {
+    Stats s = getSummary(p.toString());
+    s.succeeded++;
+  }
+  
+  private Stats getSummary(String s)
+  {
+    Stats stats = summary.get(s);
+    if(stats == null)
+    {
+      stats = new Stats(s);
+      summary.put(s, stats);
+    }
+    return stats;
+  }
+  
+  public void clearSummary()
+  {
+    summary.clear();
+  }
+  
+  public void printSummary()
+  {
+    TreeSet<Stats> sorted = new TreeSet<Stats>();
+    sorted.addAll(summary.values());
+    for(Stats s : sorted)
+    {
+    	System.out.println(String.format("%4d", s.succeeded)+" of "+String.format("%4d", s.succeeded+s.failed)+" : "+s.val);
+    }
+  }
 
   /**
    * Modify stack to simulate a function call.

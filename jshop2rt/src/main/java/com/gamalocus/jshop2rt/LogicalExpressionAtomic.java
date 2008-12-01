@@ -23,6 +23,7 @@ public class LogicalExpressionAtomic extends LogicalExpression
   public LogicalExpressionAtomic(Predicate logicalAtomIn)
   {
     logicalAtom = logicalAtomIn;
+    setSourcePos(logicalAtomIn);
   }
 
   /** This class does not need any initialization code, therefore, this

@@ -55,6 +55,12 @@ public class PreconditionAtomic extends Precondition
   {
     return e.nextBinding(boundP);
   }
+  
+  @Override
+  public String toString()
+  {
+    return "PreconditionAtomic: "+this.p;
+  }
 
   /** To reset this atomic logical expression.
   */
