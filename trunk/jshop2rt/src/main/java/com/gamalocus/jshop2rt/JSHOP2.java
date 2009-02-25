@@ -194,7 +194,6 @@ public class JSHOP2 implements Serializable
     {
     	this.val = val;
     }
-	@Override
 	public int compareTo(Stats o)
 	{
       int ret = (failed+succeeded)-(o.failed+o.succeeded);
